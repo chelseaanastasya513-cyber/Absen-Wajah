@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Absensi Wajah</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="page-shell">
+    <section class="card">
+      <div class="brand-bar">
+        <div>
+          <h1>Absensi Wajah</h1>
+          <p>Masukkan nama, aktifkan kamera, ambil foto, lalu absen.</p>
+        </div>
+      </div>
+
+      <form id="attendance-form" autocomplete="off">
+        <label for="studentName">Nama Mahasiswa</label>
+        <input id="studentName" type="text" placeholder="Contoh: Andi Saputra" required />
+
+        <div class="camera-controls">
+          <button type="button" id="startCamera" class="primary-button">Aktifkan Kamera</button>
+          <button type="button" id="capturePhoto" class="secondary-button" disabled>Ambil Foto</button>
+        </div>
+
+        <div class="video-preview">
+          <video id="cameraPreview" playsinline autoplay muted></video>
+          <div class="preview-overlay">Preview kamera akan tampil di sini</div>
+        </div>
+
+        <div class="photo-preview" id="photoPreviewWrapper">
+          <img id="photoPreview" alt="Preview Foto Wajah" />
+        </div>
+
+        <button type="button" id="submitAttendance" class="primary-button" disabled>Absen Masuk</button>
+      </form>
+
+      <div id="notification" class="notification"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
