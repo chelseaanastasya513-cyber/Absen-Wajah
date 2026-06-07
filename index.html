@@ -20,6 +20,20 @@
         <label for="studentName">Nama Mahasiswa</label>
         <input id="studentName" type="text" placeholder="Contoh: Andi Saputra" required />
 
+        <div class="field-grid">
+          <div>
+            <label for="studentNis">NIS</label>
+            <input id="studentNis" type="text" placeholder="Contoh: 12345678" required />
+          </div>
+          <div>
+            <label for="studentClass">Kelas</label>
+            <input id="studentClass" type="text" placeholder="Contoh: TI-1" required />
+          </div>
+        </div>
+
+        <label for="studentMajor">Jurusan</label>
+        <input id="studentMajor" type="text" placeholder="Contoh: Teknik Informatika" required />
+
         <div class="camera-controls">
           <button type="button" id="startCamera" class="primary-button">Aktifkan Kamera</button>
           <button type="button" id="capturePhoto" class="secondary-button" disabled>Ambil Foto</button>
@@ -36,6 +50,33 @@
 
         <button type="button" id="submitAttendance" class="primary-button" disabled>Absen Masuk</button>
       </form>
+
+      <section class="attendance-log">
+        <div class="attendance-log-header">
+          <h2>Daftar Absensi</h2>
+          <p>Riwayat absensi langsung ditampilkan setelah tersimpan.</p>
+        </div>
+        <div class="table-wrapper">
+          <table class="attendance-table">
+            <thead>
+              <tr>
+                <th>Nama</th>
+                <th>NIS</th>
+                <th>Kelas</th>
+                <th>Jurusan</th>
+                <th>Jam</th>
+                <th>Tanggal</th>
+                <th>Foto</th>
+              </tr>
+            </thead>
+            <tbody id="attendanceTableBody">
+              <tr>
+                <td colspan="7" class="empty-state">Belum ada data absensi.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
       <div id="notification" class="notification"></div>
     </section>
