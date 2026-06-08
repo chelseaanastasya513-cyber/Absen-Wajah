@@ -6,16 +6,66 @@ const photoPreview = document.getElementById('photoPreview');
 const photoPreviewWrapper = document.getElementById('photoPreviewWrapper');
 const notification = document.getElementById('notification');
 const studentNameInput = document.getElementById('studentName');
-const studentNisInput = document.getElementById('studentNis');
+const studentNpmInput = document.getElementById('studentNpm');
 const studentClassInput = document.getElementById('studentClass');
 const studentMajorInput = document.getElementById('studentMajor');
 const attendanceTableBody = document.getElementById('attendanceTableBody');
 
 let stream = null;
 let capturedImageBase64 = '';
-const attendanceRecords = [];
+const STORAGE_KEY = 'attendanceRecords';
 
-const GAS_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec';
+const sampleRecords = [
+  {
+    nama: 'Rina Aulia',
+    npm: '2101021001',
+    kelas: 'TI-1',
+    jurusan: 'Teknik Informatika',
+    jam: '07:45:12',
+    tanggal: '08 Juni 2026',
+    foto: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
+  },
+  {
+    nama: 'Idham Pratama',
+    npm: '2101021002',
+    kelas: 'TI-1',
+    jurusan: 'Teknik Informatika',
+    jam: '07:48:05',
+    tanggal: '08 Juni 2026',
+    foto: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80',
+  },
+  {
+    nama: 'Sarah Wijaya',
+    npm: '2101021003',
+    kelas: 'TI-2',
+    jurusan: 'Teknik Informatika',
+    jam: '07:50:30',
+    tanggal: '08 Juni 2026',
+    foto: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
+  },
+];
+
+function loadAttendanceRecords() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (error) {
+    console.warn('Unable to load stored records.', error);
+  }
+  return sampleRecords.slice();
+}
+
+function saveAttendanceRecords(records) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  } catch (error) {
+    console.warn('Unable to save records.', error);
+  }
+}
+
+const attendanceRecords = loadAttendanceRecords();
 
 function showNotification(message) {
   notification.textContent = message;
@@ -24,7 +74,7 @@ function showNotification(message) {
 }
 
 function updateSubmitState() {
-  const hasFields = studentNameInput.value.trim() && studentNisInput.value.trim() && studentClassInput.value.trim() && studentMajorInput.value.trim();
+  const hasFields = studentNameInput.value.trim() && studentNpmInput.value.trim() && studentClassInput.value.trim() && studentMajorInput.value.trim();
   submitAttendanceButton.disabled = !hasFields || !capturedImageBase64;
 }
 
@@ -37,7 +87,7 @@ async function startCamera() {
     showNotification('Kamera aktif, silakan ambil foto.');
   } catch (error) {
     console.error(error);
-    showNotification('Tidak dapat mengaktifkan kamera. Periksa izin atau perangkat.');
+    showNotification('Periksa izin kamera dan coba kembali.');
   }
 }
 
@@ -83,7 +133,7 @@ function renderAttendanceTable() {
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${record.nama}</td>
-      <td>${record.nis}</td>
+      <td>${record.npm}</td>
       <td>${record.kelas}</td>
       <td>${record.jurusan}</td>
       <td>${record.jam}</td>
@@ -94,13 +144,13 @@ function renderAttendanceTable() {
   });
 }
 
-async function submitAttendance() {
+function submitAttendance() {
   const nama = studentNameInput.value.trim();
-  const nis = studentNisInput.value.trim();
+  const npm = studentNpmInput.value.trim();
   const kelas = studentClassInput.value.trim();
   const jurusan = studentMajorInput.value.trim();
 
-  if (!nama || !nis || !kelas || !jurusan) {
+  if (!nama || !npm || !kelas || !jurusan) {
     showNotification('Semua kolom harus diisi sebelum absen.');
     return;
   }
@@ -112,10 +162,10 @@ async function submitAttendance() {
   const now = new Date();
   const record = {
     nama,
-    nis,
+    npm,
     kelas,
     jurusan,
-    tanggal: now.toLocaleDateString('id-ID'),
+    tanggal: now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }),
     jam: now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
     foto: capturedImageBase64,
   };
@@ -123,43 +173,26 @@ async function submitAttendance() {
   submitAttendanceButton.disabled = true;
   submitAttendanceButton.textContent = 'Menyimpan...';
 
-  try {
-    const response = await fetch(GAS_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(record),
-    });
+  attendanceRecords.push(record);
+  saveAttendanceRecords(attendanceRecords);
+  renderAttendanceTable();
 
-    if (!response.ok) {
-      throw new Error('Respons server tidak valid');
-    }
-
-    attendanceRecords.push(record);
-    renderAttendanceTable();
-
-    showNotification('Absensi berhasil');
-    studentNameInput.value = '';
-    studentNisInput.value = '';
-    studentClassInput.value = '';
-    studentMajorInput.value = '';
-    capturedImageBase64 = '';
-    photoPreviewWrapper.style.display = 'none';
-  } catch (error) {
-    console.error(error);
-    showNotification('Data tidak berhasil tersimpan. Coba lagi.');
-  } finally {
-    submitAttendanceButton.textContent = 'Absen Masuk';
-    updateSubmitState();
-  }
+  showNotification('Data absensi berhasil tersimpan.');
+  studentNameInput.value = '';
+  studentNpmInput.value = '';
+  studentClassInput.value = '';
+  studentMajorInput.value = '';
+  capturedImageBase64 = '';
+  photoPreviewWrapper.style.display = 'none';
+  submitAttendanceButton.textContent = 'Absen Masuk';
+  updateSubmitState();
 }
 
 startCameraButton.addEventListener('click', startCamera);
 capturePhotoButton.addEventListener('click', capturePhoto);
 submitAttendanceButton.addEventListener('click', submitAttendance);
 
-[studentNameInput, studentNisInput, studentClassInput, studentMajorInput].forEach(input => {
+[studentNameInput, studentNpmInput, studentClassInput, studentMajorInput].forEach(input => {
   input.addEventListener('input', updateSubmitState);
 });
 

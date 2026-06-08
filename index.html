@@ -8,11 +8,15 @@
 </head>
 <body>
   <main class="page-shell">
-    <section class="card">
+    <div class="hero-decoration"></div>
+    <div class="hero-decoration hero-decoration--secondary"></div>
+
+    <section class="card glass-card">
       <div class="brand-bar">
         <div>
-          <h1>Absensi Wajah</h1>
-          <p>Masukkan nama, aktifkan kamera, ambil foto, lalu absen.</p>
+          <p class="eyebrow">Sistem Absensi Sekolah</p>
+          <h1>Absensi Wajah Premium</h1>
+          <p>Ambil foto, simpan data otomatis, dan pantau absensi dalam dashboard profesional.</p>
         </div>
       </div>
 
@@ -22,8 +26,8 @@
 
         <div class="field-grid">
           <div>
-            <label for="studentNis">NIS</label>
-            <input id="studentNis" type="text" placeholder="Contoh: 12345678" required />
+            <label for="studentNpm">NPM</label>
+            <input id="studentNpm" type="text" placeholder="Contoh: 2101021001" required />
           </div>
           <div>
             <label for="studentClass">Kelas</label>
@@ -54,14 +58,15 @@
       <section class="attendance-log">
         <div class="attendance-log-header">
           <h2>Daftar Absensi</h2>
-          <p>Riwayat absensi langsung ditampilkan setelah tersimpan.</p>
+          <p>Riwayat absensi tampil secara real-time setelah tersimpan.</p>
         </div>
+
         <div class="table-wrapper">
           <table class="attendance-table">
             <thead>
               <tr>
                 <th>Nama</th>
-                <th>NIS</th>
+                <th>NPM</th>
                 <th>Kelas</th>
                 <th>Jurusan</th>
                 <th>Jam</th>
