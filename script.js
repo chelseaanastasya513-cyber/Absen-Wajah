@@ -313,13 +313,23 @@ capturePhotoButton.addEventListener('click', capturePhoto);
 submitAttendanceButton.addEventListener('click', submitAttendance);
 refreshButton.addEventListener('click', refreshAttendanceData);
 attendanceTableBody.addEventListener('click', handleTableClick);
-confirmYesButton.addEventListener('click', () => {
+confirmYesButton.addEventListener('click', event => {
+  event.stopPropagation();
   if (pendingDeleteId) {
     deleteAttendanceRecord(pendingDeleteId);
   }
   closeConfirmationDialog();
 });
-confirmNoButton.addEventListener('click', closeConfirmationDialog);
+confirmNoButton.addEventListener('click', event => {
+  event.stopPropagation();
+  closeConfirmationDialog();
+});
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !confirmationOverlay.hidden) {
+    closeConfirmationDialog();
+  }
+});
 
 [studentNameInput, studentNpmInput, studentClassInput, studentMajorInput].forEach(input => {
   input.addEventListener('input', updateSubmitState);

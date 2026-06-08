@@ -272,8 +272,20 @@ input[type="search"] {
   background: rgba(255, 255, 255, 0.28);
 }
 
+.primary-button:active,
+.secondary-button:active {
+  transform: translateY(1px);
+}
+
+.primary-button:focus-visible,
+.secondary-button:focus-visible {
+  outline: 3px solid rgba(92, 70, 255, 0.28);
+  outline-offset: 3px;
+}
+
 .confirm-actions button {
   min-width: 120px;
+  pointer-events: auto;
 }
 
 .confirmation-overlay[hidden] {
@@ -287,10 +299,14 @@ input[type="search"] {
   place-items: center;
   background: rgba(15, 13, 43, 0.28);
   backdrop-filter: blur(14px);
-  z-index: 50;
+  z-index: 9999;
+  pointer-events: auto;
 }
 
 .confirm-dialog {
+  position: relative;
+  z-index: 10000;
+  pointer-events: auto;
   width: min(460px, calc(100% - 32px));
   padding: 32px;
   border-radius: 30px;
