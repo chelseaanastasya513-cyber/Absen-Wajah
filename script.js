@@ -15,9 +15,7 @@ const statusFilter = document.getElementById('statusFilter');
 const dateFilter = document.getElementById('dateFilter');
 const refreshButton = document.getElementById('refreshButton');
 const attendanceTableBody = document.getElementById('attendanceTableBody');
-const confirmationOverlay = document.getElementById('confirmationOverlay');
-const confirmYesButton = document.querySelector('.confirm-yes');
-const confirmNoButton = document.querySelector('.confirm-no');
+
 const statTotal = document.getElementById('statTotal');
 const statHadir = document.getElementById('statHadir');
 const statSakit = document.getElementById('statSakit');
@@ -278,18 +276,7 @@ function refreshAttendanceData() {
   showNotification('Data absensi diperbarui.');
 }
 
-function openConfirmationDialog(id) {
-  pendingDeleteId = id;
-  confirmationOverlay.hidden = false;
-  confirmationOverlay.setAttribute('aria-hidden', 'false');
-  confirmYesButton.focus();
-}
 
-function closeConfirmationDialog() {
-  pendingDeleteId = null;
-  confirmationOverlay.hidden = true;
-  confirmationOverlay.setAttribute('aria-hidden', 'true');
-}
 
 function deleteAttendanceRecord(id) {
   attendanceRecords = attendanceRecords.filter(record => record.id !== id);
@@ -304,7 +291,7 @@ function handleTableClick(event) {
   if (!button) return;
   const id = button.dataset.id;
   if (id) {
-    openConfirmationDialog(id);
+    deleteAttendanceRecord(id);
   }
 }
 
@@ -313,23 +300,7 @@ capturePhotoButton.addEventListener('click', capturePhoto);
 submitAttendanceButton.addEventListener('click', submitAttendance);
 refreshButton.addEventListener('click', refreshAttendanceData);
 attendanceTableBody.addEventListener('click', handleTableClick);
-confirmYesButton.addEventListener('click', event => {
-  event.stopPropagation();
-  if (pendingDeleteId) {
-    deleteAttendanceRecord(pendingDeleteId);
-  }
-  closeConfirmationDialog();
-});
-confirmNoButton.addEventListener('click', event => {
-  event.stopPropagation();
-  closeConfirmationDialog();
-});
 
-document.addEventListener('keydown', event => {
-  if (event.key === 'Escape' && !confirmationOverlay.hidden) {
-    closeConfirmationDialog();
-  }
-});
 
 [studentNameInput, studentNpmInput, studentClassInput, studentMajorInput].forEach(input => {
   input.addEventListener('input', updateSubmitState);
@@ -337,12 +308,6 @@ document.addEventListener('keydown', event => {
 
 [searchInput, statusFilter, dateFilter].forEach(control => {
   control.addEventListener('input', renderAttendanceTable);
-});
-
-window.addEventListener('click', event => {
-  if (event.target === confirmationOverlay) {
-    closeConfirmationDialog();
-  }
 });
 
 renderAttendanceTable();
