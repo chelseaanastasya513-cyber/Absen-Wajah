@@ -10,81 +10,177 @@
   <main class="page-shell">
     <div class="hero-decoration"></div>
     <div class="hero-decoration hero-decoration--secondary"></div>
+    <div class="hero-decoration hero-decoration--tertiary"></div>
 
-    <section class="card glass-card">
-      <div class="brand-bar">
+    <section class="dashboard-shell">
+      <div class="dashboard-header">
         <div>
-          <p class="eyebrow">Sistem Absensi Sekolah</p>
+          <p class="eyebrow">Sistem Absensi Universitas</p>
           <h1>Absensi Wajah Premium</h1>
-          <p>Ambil foto, simpan data otomatis, dan pantau absensi dalam dashboard profesional.</p>
+          <p>Monitor kehadiran mahasiswa dengan dashboard modern dan pengalaman UI/UX elegan.</p>
         </div>
+        <button id="refreshButton" type="button" class="ghost-button">
+          <span>Refresh Data</span>
+        </button>
       </div>
 
-      <form id="attendance-form" autocomplete="off">
-        <label for="studentName">Nama Mahasiswa</label>
-        <input id="studentName" type="text" placeholder="Contoh: Andi Saputra" required />
-
-        <div class="field-grid">
+      <div class="stats-grid" aria-label="Statistik Absensi">
+        <article class="stat-card stat-card--total">
+          <span class="stat-icon">👥</span>
           <div>
-            <label for="studentNpm">NPM</label>
-            <input id="studentNpm" type="text" placeholder="Contoh: 2101021001" required />
+            <p>Total Mahasiswa</p>
+            <h3 id="statTotal">0</h3>
           </div>
+        </article>
+        <article class="stat-card stat-card--hadir">
+          <span class="stat-icon">✅</span>
           <div>
-            <label for="studentClass">Kelas</label>
-            <input id="studentClass" type="text" placeholder="Contoh: TI-1" required />
+            <p>Hadir</p>
+            <h3 id="statHadir">0</h3>
           </div>
-        </div>
+        </article>
+        <article class="stat-card stat-card--sakit">
+          <span class="stat-icon">🤒</span>
+          <div>
+            <p>Sakit</p>
+            <h3 id="statSakit">0</h3>
+          </div>
+        </article>
+        <article class="stat-card stat-card--izin">
+          <span class="stat-icon">📝</span>
+          <div>
+            <p>Izin</p>
+            <h3 id="statIzin">0</h3>
+          </div>
+        </article>
+        <article class="stat-card stat-card--alfa">
+          <span class="stat-icon">❌</span>
+          <div>
+            <p>Alfa</p>
+            <h3 id="statAlfa">0</h3>
+          </div>
+        </article>
+        <article class="stat-card stat-card--terlambat">
+          <span class="stat-icon">⏰</span>
+          <div>
+            <p>Terlambat</p>
+            <h3 id="statTerlambat">0</h3>
+          </div>
+        </article>
+      </div>
 
-        <label for="studentMajor">Jurusan</label>
-        <input id="studentMajor" type="text" placeholder="Contoh: Teknik Informatika" required />
+      <div class="content-grid">
+        <section class="card glass-card attendance-form-card">
+          <div class="brand-bar small">
+            <p class="eyebrow">Form Absensi</p>
+            <h2>Absen Mahasiswa</h2>
+          </div>
 
-        <div class="camera-controls">
-          <button type="button" id="startCamera" class="primary-button">Aktifkan Kamera</button>
-          <button type="button" id="capturePhoto" class="secondary-button" disabled>Ambil Foto</button>
-        </div>
+          <form id="attendance-form" autocomplete="off">
+            <label for="studentName">Nama Mahasiswa</label>
+            <input id="studentName" type="text" placeholder="Contoh: Andi Saputra" required />
 
-        <div class="video-preview">
-          <video id="cameraPreview" playsinline autoplay muted></video>
-          <div class="preview-overlay">Preview kamera akan tampil di sini</div>
-        </div>
+            <div class="field-grid">
+              <div>
+                <label for="studentNpm">NPM</label>
+                <input id="studentNpm" type="text" placeholder="Contoh: 2101021001" required />
+              </div>
+              <div>
+                <label for="studentClass">Kelas</label>
+                <input id="studentClass" type="text" placeholder="Contoh: TI-1" required />
+              </div>
+            </div>
 
-        <div class="photo-preview" id="photoPreviewWrapper">
-          <img id="photoPreview" alt="Preview Foto Wajah" />
-        </div>
+            <label for="studentMajor">Jurusan</label>
+            <input id="studentMajor" type="text" placeholder="Contoh: Teknik Informatika" required />
 
-        <button type="button" id="submitAttendance" class="primary-button" disabled>Absen Masuk</button>
-      </form>
+            <label for="attendanceStatus">Status Kehadiran</label>
+            <select id="attendanceStatus" required>
+              <option value="Hadir">Hadir</option>
+              <option value="Sakit">Sakit</option>
+              <option value="Izin">Izin</option>
+              <option value="Alfa">Alfa</option>
+              <option value="Terlambat">Terlambat</option>
+            </select>
 
-      <section class="attendance-log">
-        <div class="attendance-log-header">
-          <h2>Daftar Absensi</h2>
-          <p>Riwayat absensi tampil secara real-time setelah tersimpan.</p>
-        </div>
+            <div class="camera-controls">
+              <button type="button" id="startCamera" class="primary-button">Aktifkan Kamera</button>
+              <button type="button" id="capturePhoto" class="secondary-button" disabled>Ambil Foto</button>
+            </div>
 
-        <div class="table-wrapper">
-          <table class="attendance-table">
-            <thead>
-              <tr>
-                <th>Nama</th>
-                <th>NPM</th>
-                <th>Kelas</th>
-                <th>Jurusan</th>
-                <th>Jam</th>
-                <th>Tanggal</th>
-                <th>Foto</th>
-              </tr>
-            </thead>
-            <tbody id="attendanceTableBody">
-              <tr>
-                <td colspan="7" class="empty-state">Belum ada data absensi.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+            <div class="video-preview">
+              <video id="cameraPreview" playsinline autoplay muted></video>
+              <div class="preview-overlay">Preview kamera akan tampil di sini</div>
+            </div>
+
+            <div class="photo-preview" id="photoPreviewWrapper">
+              <img id="photoPreview" alt="Preview Foto Wajah" />
+            </div>
+
+            <button type="button" id="submitAttendance" class="primary-button" disabled>Absen Masuk</button>
+          </form>
+        </section>
+
+        <section class="card glass-card attendance-log-card">
+          <div class="attendance-log-header">
+            <div>
+              <p class="eyebrow">Daftar Absensi</p>
+              <h2>Riwayat Kehadiran</h2>
+            </div>
+            <p class="subtext">Gunakan pencarian, filter status, atau tanggal untuk menemukan data dengan cepat.</p>
+          </div>
+
+          <div class="filters-bar">
+            <input id="searchInput" type="search" placeholder="Cari nama, NPM, kelas, atau jurusan" />
+            <select id="statusFilter">
+              <option value="all">Semua Status</option>
+              <option value="Hadir">Hadir</option>
+              <option value="Sakit">Sakit</option>
+              <option value="Izin">Izin</option>
+              <option value="Alfa">Alfa</option>
+              <option value="Terlambat">Terlambat</option>
+            </select>
+            <input id="dateFilter" type="date" />
+          </div>
+
+          <div class="table-wrapper">
+            <table class="attendance-table">
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>NPM</th>
+                  <th>Kelas</th>
+                  <th>Jurusan</th>
+                  <th>Status</th>
+                  <th>Jam</th>
+                  <th>Tanggal</th>
+                  <th>Foto</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="attendanceTableBody">
+                <tr>
+                  <td colspan="9" class="empty-state">Belum ada data absensi.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
 
       <div id="notification" class="notification"></div>
     </section>
+
+    <div class="confirmation-overlay" id="confirmationOverlay" hidden>
+      <div class="confirm-dialog">
+        <h3>Konfirmasi Hapus Data</h3>
+        <p>Apakah Anda yakin ingin menghapus data ini?</p>
+        <div class="confirm-actions">
+          <button type="button" class="secondary-button confirm-no">Batal</button>
+          <button type="button" class="primary-button confirm-yes">Ya, Hapus</button>
+        </div>
+      </div>
+    </div>
   </main>
 
   <script src="script.js"></script>

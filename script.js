@@ -9,38 +9,62 @@ const studentNameInput = document.getElementById('studentName');
 const studentNpmInput = document.getElementById('studentNpm');
 const studentClassInput = document.getElementById('studentClass');
 const studentMajorInput = document.getElementById('studentMajor');
+const attendanceStatusSelect = document.getElementById('attendanceStatus');
+const searchInput = document.getElementById('searchInput');
+const statusFilter = document.getElementById('statusFilter');
+const dateFilter = document.getElementById('dateFilter');
+const refreshButton = document.getElementById('refreshButton');
 const attendanceTableBody = document.getElementById('attendanceTableBody');
+const confirmationOverlay = document.getElementById('confirmationOverlay');
+const confirmYesButton = document.querySelector('.confirm-yes');
+const confirmNoButton = document.querySelector('.confirm-no');
+const statTotal = document.getElementById('statTotal');
+const statHadir = document.getElementById('statHadir');
+const statSakit = document.getElementById('statSakit');
+const statIzin = document.getElementById('statIzin');
+const statAlfa = document.getElementById('statAlfa');
+const statTerlambat = document.getElementById('statTerlambat');
 
 let stream = null;
 let capturedImageBase64 = '';
+let pendingDeleteId = null;
 const STORAGE_KEY = 'attendanceRecords';
 
 const sampleRecords = [
   {
+    id: 'a1',
     nama: 'Rina Aulia',
     npm: '2101021001',
     kelas: 'TI-1',
     jurusan: 'Teknik Informatika',
+    status: 'Hadir',
     jam: '07:45:12',
     tanggal: '08 Juni 2026',
+    dateValue: '2026-06-08',
     foto: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
   },
   {
+    id: 'b2',
     nama: 'Idham Pratama',
     npm: '2101021002',
     kelas: 'TI-1',
     jurusan: 'Teknik Informatika',
+    status: 'Terlambat',
     jam: '07:48:05',
     tanggal: '08 Juni 2026',
+    dateValue: '2026-06-08',
     foto: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80',
   },
   {
+    id: 'c3',
     nama: 'Sarah Wijaya',
     npm: '2101021003',
     kelas: 'TI-2',
     jurusan: 'Teknik Informatika',
+    status: 'Sakit',
     jam: '07:50:30',
     tanggal: '08 Juni 2026',
+    dateValue: '2026-06-08',
     foto: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80',
   },
 ];
@@ -65,12 +89,45 @@ function saveAttendanceRecords(records) {
   }
 }
 
-const attendanceRecords = loadAttendanceRecords();
+let attendanceRecords = loadAttendanceRecords();
 
 function showNotification(message) {
   notification.textContent = message;
   notification.classList.add('show');
   setTimeout(() => notification.classList.remove('show'), 3200);
+}
+
+function getBadgeClass(status) {
+  switch (status) {
+    case 'Hadir':
+      return 'badge--hadir';
+    case 'Sakit':
+      return 'badge--sakit';
+    case 'Izin':
+      return 'badge--izin';
+    case 'Alfa':
+      return 'badge--alfa';
+    case 'Terlambat':
+      return 'badge--terlambat';
+    default:
+      return 'badge--default';
+  }
+}
+
+function updateStats() {
+  const total = attendanceRecords.length;
+  const hadir = attendanceRecords.filter(item => item.status === 'Hadir').length;
+  const sakit = attendanceRecords.filter(item => item.status === 'Sakit').length;
+  const izin = attendanceRecords.filter(item => item.status === 'Izin').length;
+  const alfa = attendanceRecords.filter(item => item.status === 'Alfa').length;
+  const terlambat = attendanceRecords.filter(item => item.status === 'Terlambat').length;
+
+  statTotal.textContent = total;
+  statHadir.textContent = hadir;
+  statSakit.textContent = sakit;
+  statIzin.textContent = izin;
+  statAlfa.textContent = alfa;
+  statTerlambat.textContent = terlambat;
 }
 
 function updateSubmitState() {
@@ -121,24 +178,44 @@ function capturePhoto() {
   });
 }
 
+function getFilteredAttendanceRecords() {
+  const query = searchInput.value.trim().toLowerCase();
+  const status = statusFilter.value;
+  const date = dateFilter.value;
+
+  return attendanceRecords.slice().reverse().filter(record => {
+    const matchesQuery = !query || [record.nama, record.npm, record.kelas, record.jurusan].some(value => value.toLowerCase().includes(query));
+    const matchesStatus = status === 'all' || record.status === status;
+    const matchesDate = !date || record.dateValue === date;
+    return matchesQuery && matchesStatus && matchesDate;
+  });
+}
+
 function renderAttendanceTable() {
   attendanceTableBody.innerHTML = '';
+  const filteredRecords = getFilteredAttendanceRecords();
 
-  if (attendanceRecords.length === 0) {
-    attendanceTableBody.innerHTML = '<tr><td colspan="7" class="empty-state">Belum ada data absensi.</td></tr>';
+  if (filteredRecords.length === 0) {
+    attendanceTableBody.innerHTML = '<tr><td colspan="9" class="empty-state">Tidak ada data yang sesuai filter.</td></tr>';
     return;
   }
 
-  attendanceRecords.slice().reverse().forEach(record => {
+  filteredRecords.forEach(record => {
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${record.nama}</td>
       <td>${record.npm}</td>
       <td>${record.kelas}</td>
       <td>${record.jurusan}</td>
+      <td><span class="status-badge ${getBadgeClass(record.status)}">${record.status}</span></td>
       <td>${record.jam}</td>
       <td>${record.tanggal}</td>
       <td><img src="${record.foto}" alt="Foto ${record.nama}" /></td>
+      <td>
+        <button type="button" class="delete-button" data-id="${record.id}" aria-label="Hapus data ${record.nama}">
+          🗑️
+        </button>
+      </td>
     `;
     attendanceTableBody.appendChild(row);
   });
@@ -149,6 +226,7 @@ function submitAttendance() {
   const npm = studentNpmInput.value.trim();
   const kelas = studentClassInput.value.trim();
   const jurusan = studentMajorInput.value.trim();
+  const status = attendanceStatusSelect.value;
 
   if (!nama || !npm || !kelas || !jurusan) {
     showNotification('Semua kolom harus diisi sebelum absen.');
@@ -161,11 +239,14 @@ function submitAttendance() {
 
   const now = new Date();
   const record = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     nama,
     npm,
     kelas,
     jurusan,
+    status,
     tanggal: now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }),
+    dateValue: now.toISOString().split('T')[0],
     jam: now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
     foto: capturedImageBase64,
   };
@@ -176,24 +257,80 @@ function submitAttendance() {
   attendanceRecords.push(record);
   saveAttendanceRecords(attendanceRecords);
   renderAttendanceTable();
+  updateStats();
 
   showNotification('Data absensi berhasil tersimpan.');
   studentNameInput.value = '';
   studentNpmInput.value = '';
   studentClassInput.value = '';
   studentMajorInput.value = '';
+  attendanceStatusSelect.value = 'Hadir';
   capturedImageBase64 = '';
   photoPreviewWrapper.style.display = 'none';
   submitAttendanceButton.textContent = 'Absen Masuk';
   updateSubmitState();
 }
 
+function refreshAttendanceData() {
+  attendanceRecords = loadAttendanceRecords();
+  renderAttendanceTable();
+  updateStats();
+  showNotification('Data absensi diperbarui.');
+}
+
+function openConfirmationDialog(id) {
+  pendingDeleteId = id;
+  confirmationOverlay.hidden = false;
+}
+
+function closeConfirmationDialog() {
+  pendingDeleteId = null;
+  confirmationOverlay.hidden = true;
+}
+
+function deleteAttendanceRecord(id) {
+  attendanceRecords = attendanceRecords.filter(record => record.id !== id);
+  saveAttendanceRecords(attendanceRecords);
+  renderAttendanceTable();
+  updateStats();
+  showNotification('Data absensi berhasil dihapus.');
+}
+
+function handleTableClick(event) {
+  const button = event.target.closest('.delete-button');
+  if (!button) return;
+  const id = button.dataset.id;
+  if (id) {
+    openConfirmationDialog(id);
+  }
+}
+
 startCameraButton.addEventListener('click', startCamera);
 capturePhotoButton.addEventListener('click', capturePhoto);
 submitAttendanceButton.addEventListener('click', submitAttendance);
+refreshButton.addEventListener('click', refreshAttendanceData);
+attendanceTableBody.addEventListener('click', handleTableClick);
+confirmYesButton.addEventListener('click', () => {
+  if (pendingDeleteId) {
+    deleteAttendanceRecord(pendingDeleteId);
+  }
+  closeConfirmationDialog();
+});
+confirmNoButton.addEventListener('click', closeConfirmationDialog);
 
 [studentNameInput, studentNpmInput, studentClassInput, studentMajorInput].forEach(input => {
   input.addEventListener('input', updateSubmitState);
 });
 
+[searchInput, statusFilter, dateFilter].forEach(control => {
+  control.addEventListener('input', renderAttendanceTable);
+});
+
+window.addEventListener('click', event => {
+  if (event.target === confirmationOverlay) {
+    closeConfirmationDialog();
+  }
+});
+
 renderAttendanceTable();
+updateStats();
