@@ -71,6 +71,7 @@ body {
 .page-shell {
   width: min(1240px, 100%);
   position: relative;
+  z-index: 1;
 }
 
 .hero-decoration,
@@ -135,6 +136,8 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   border: 1.5px solid rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(40px);
+  z-index: 2;
+  isolation: isolate;
 }
 
 .dashboard-shell::after {
@@ -142,9 +145,10 @@ body {
   position: absolute;
   inset: 0;
   background: 
-    repeating-radial-gradient(circle at 15% 20%, rgba(255,255,255,0.25), transparent 8px 16px),
-    radial-gradient(circle at 80% 75%, rgba(200, 180, 255, 0.1), transparent 20%);
+    repeating-radial-gradient(circle at 15% 20%, rgba(255,255,255,0.1), transparent 8px 16px),
+    radial-gradient(circle at 80% 75%, rgba(200, 180, 255, 0.05), transparent 20%);
   pointer-events: none;
+  display: none;
 }
 
 .dashboard-header {
@@ -258,7 +262,8 @@ body {
   grid-template-columns: 1.05fr 1.5fr;
   gap: 26px;
   align-items: start;
-  z-index: 1;
+  z-index: 10;
+  position: relative;
 }
 
 .attendance-form-card,
@@ -305,6 +310,9 @@ body {
     0 0 120px rgba(169, 118, 255, 0.12),
     0 0 80px rgba(200, 160, 255, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  isolation: isolate;
+  z-index: 10;
+  overflow: hidden;
 }
 
 .glass-card {
@@ -378,13 +386,11 @@ input[type="search"]::placeholder {
 
 video {
   width: 100%;
-  border-radius: 20px;
-  background: linear-gradient(135deg, rgba(147, 112, 255, 0.15), rgba(200, 160, 255, 0.1));
-  box-shadow: 
-    0 16px 40px rgba(147, 112, 255, 0.15),
-    0 0 60px rgba(169, 118, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  border: 1.5px solid rgba(200, 160, 255, 0.3);
+  border-radius: 18px;
+  background: #f3e8ff;
+  display: block;
+  z-index: 8;
+  position: relative;
 }
 
 .photo-preview {
@@ -396,13 +402,17 @@ video {
     0 0 60px rgba(169, 118, 255, 0.1),
     0 0 40px rgba(200, 160, 255, 0.08);
   border: 1.5px solid rgba(200, 160, 255, 0.3);
+  background: #f3e8ff;
+  isolation: isolate;
+  z-index: 8;
 }
 
 .photo-preview img {
   width: 100%;
   height: auto;
   display: block;
-  border-radius: 20px;
+  border-radius: 18px;
+  z-index: 9;
 }
 
 .field-grid {
@@ -525,6 +535,12 @@ input[type="search"] {
 .video-preview {
   position: relative;
   margin: 20px 0;
+  isolation: isolate;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #f3e8ff;
+  padding: 2px;
+  z-index: 10;
 }
 
 .preview-overlay {
@@ -535,6 +551,7 @@ input[type="search"] {
   color: rgba(84, 73, 119, 0.4);
   font-size: 0.95rem;
   pointer-events: none;
+  z-index: 5;
 }
 
 /* ========== TABLE WRAPPER ========== */
@@ -665,6 +682,8 @@ form {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  z-index: 10;
+  position: relative;
 }
 
 form > :first-child {
@@ -673,6 +692,8 @@ form > :first-child {
 
 form label {
   margin-top: 6px;
+  z-index: 8;
+  position: relative;
 }
 
 select {
@@ -805,6 +826,18 @@ select option {
   animation-play-state: paused;
 }
 
+/* ========== CAMERA AREA OPTIMIZATION ========== */
+.attendance-form-card form {
+  position: relative;
+  z-index: 12;
+}
+
+.attendance-form-card video,
+.attendance-form-card .photo-preview {
+  position: relative;
+  z-index: 15;
+}
+
 /* ========== LABEL STYLING ========== */
 label {
   display: block;
@@ -822,16 +855,17 @@ label {
   position: fixed;
   border-radius: 50%;
   pointer-events: none;
-  mix-blend-mode: screen;
-  opacity: 0.15;
+  mix-blend-mode: lighten;
+  opacity: 0.12;
   filter: blur(80px);
+  z-index: 0;
 }
 
 .bokeh-element--1 {
   width: 300px;
   height: 300px;
-  top: 10%;
-  left: 5%;
+  top: -120px;
+  left: -100px;
   background: radial-gradient(circle, rgba(186, 165, 255, 0.5), transparent);
   animation: bokehFloat 20s ease-in-out infinite;
 }
@@ -839,8 +873,8 @@ label {
 .bokeh-element--2 {
   width: 250px;
   height: 250px;
-  top: 50%;
-  right: 8%;
+  top: -80px;
+  right: -90px;
   background: radial-gradient(circle, rgba(236, 150, 200, 0.4), transparent);
   animation: bokehFloat 25s ease-in-out infinite 2s;
 }
@@ -848,8 +882,8 @@ label {
 .bokeh-element--3 {
   width: 280px;
   height: 280px;
-  bottom: 10%;
-  left: 15%;
+  bottom: -110px;
+  left: -120px;
   background: radial-gradient(circle, rgba(167, 201, 255, 0.45), transparent);
   animation: bokehFloat 22s ease-in-out infinite 4s;
 }
@@ -857,8 +891,8 @@ label {
 .bokeh-element--4 {
   width: 220px;
   height: 220px;
-  top: 30%;
-  right: 20%;
+  top: -90px;
+  right: -100px;
   background: radial-gradient(circle, rgba(200, 160, 255, 0.35), transparent);
   animation: bokehFloat 28s ease-in-out infinite 1s;
 }
@@ -866,8 +900,8 @@ label {
 .bokeh-element--5 {
   width: 270px;
   height: 270px;
-  bottom: 20%;
-  right: 10%;
+  bottom: -130px;
+  right: -110px;
   background: radial-gradient(circle, rgba(186, 165, 255, 0.4), transparent);
   animation: bokehFloat 24s ease-in-out infinite 3s;
 }
@@ -881,22 +915,7 @@ label {
   height: 100%;
   pointer-events: none;
   z-index: 0;
-  background: 
-    repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 10px,
-      rgba(147, 112, 255, 0.03) 10px,
-      rgba(147, 112, 255, 0.03) 20px
-    ),
-    repeating-linear-gradient(
-      -45deg,
-      transparent,
-      transparent 10px,
-      rgba(200, 160, 255, 0.02) 10px,
-      rgba(200, 160, 255, 0.02) 20px
-    );
-  animation: gradientShift 8s ease infinite;
+  display: none;
 }
 
 .page-shell {
