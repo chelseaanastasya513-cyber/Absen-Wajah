@@ -240,6 +240,40 @@ input[type="search"] {
 .badge--terlambat { background: rgba(72, 94, 250, 0.16); color: #1e3599; }
 .badge--default { background: rgba(142, 114, 255, 0.14); color: #4b3a91; }
 
+.primary-button,
+.secondary-button {
+  border: none;
+  border-radius: 14px;
+  padding: 12px 22px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.primary-button {
+  background: #5c46ff;
+  color: #ffffff;
+}
+
+.primary-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(92, 70, 255, 0.24);
+}
+
+.secondary-button {
+  background: rgba(142, 114, 255, 0.12);
+  color: #4b3a91;
+}
+
+.secondary-button:hover {
+  transform: translateY(-1px);
+  background: rgba(142, 114, 255, 0.2);
+}
+
+.confirm-actions button {
+  min-width: 110px;
+}
+
 .delete-button {
   border: none;
   background: rgba(255, 255, 255, 0.88);
