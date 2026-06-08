@@ -281,11 +281,14 @@ function refreshAttendanceData() {
 function openConfirmationDialog(id) {
   pendingDeleteId = id;
   confirmationOverlay.hidden = false;
+  confirmationOverlay.setAttribute('aria-hidden', 'false');
+  confirmYesButton.focus();
 }
 
 function closeConfirmationDialog() {
   pendingDeleteId = null;
   confirmationOverlay.hidden = true;
+  confirmationOverlay.setAttribute('aria-hidden', 'true');
 }
 
 function deleteAttendanceRecord(id) {
